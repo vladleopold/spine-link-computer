@@ -27,11 +27,11 @@ The installer activates using Spine.sh --install and installs pinned editor vers
 Register the runner with a short-lived registration token generated while authenticated as a repository administrator:
 
     gh auth login
-    export GITHUB_RUNNER_TOKEN="$(gh api repos/vladleopold/spine-link-computer/actions/runners/registration-token --method POST --jq .token)"
+    export GITHUB_RUNNER_TOKEN="$(gh api repos/vladleopold/3Spine-core/actions/runners/registration-token --method POST --jq .token)"
     sudo -E bash setup/configure-runner.sh
     unset GITHUB_RUNNER_TOKEN
 
-The token is short-lived and is not written into this repository. The runner is registered with labels self-hosted,linux,X64,spine-editor,chrome and installed as a system service.
+The runner is registered to vladleopold/3Spine-core (the repository whose licensed-editor jobs were queued). The token is short-lived and is not written into this repository. The runner is registered with labels self-hosted,linux,X64,spine-editor,chrome and installed as a system service.
 
 ## Verification
 
