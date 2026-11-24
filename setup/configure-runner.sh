@@ -3,12 +3,13 @@ set -euo pipefail
 set +x
 [[ "$EUID" -eq 0 ]] || { echo 'Run this setup script with sudo/root privileges.' >&2; exit 1; }
 : "${GITHUB_RUNNER_TOKEN:?Generate a short-lived repository runner registration token first}"
-REPO_URL="${GITHUB_REPO_URL:-https://github.com/vladleopold/spine-link-computer}"
+REPO_URL="${GITHUB_REPO_URL:-https://github.com/vladleopold/3Spine-core}"
 RUNNER_USER="${RUNNER_USER:-spine-runner}"
 RUNNER_HOME="$(getent passwd "$RUNNER_USER" | cut -d: -f6)"
 [[ -n "$RUNNER_HOME" ]] || { echo 'Dedicated spine-runner account is missing.' >&2; exit 1; }
 
-RUNNER_DIR="$RUNNER_HOME/actions-runner"
+RUNNER_NAME="${RUNNER_NAME:-spine-link-ubuntu-01}"
+RUNNER_DIR="${RUNNER_DIR:-$RUNNER_HOME/actions-runner}"
 install -d -o "$RUNNER_USER" -g "$RUNNER_USER" "$RUNNER_DIR"
 cd "$RUNNER_DIR"
 if [[ ! -x ./config.sh ]]; then
@@ -23,7 +24,7 @@ fi
 ./bin/installdependencies.sh >/dev/null
 runuser -u "$RUNNER_USER" -- env HOME="$RUNNER_HOME" ./config.sh \
   --url "$REPO_URL" --token "$GITHUB_RUNNER_TOKEN" \
-  --name spine-link-ubuntu-01 --labels spine-editor,chrome --work _work \
+  --name "$RUNNER_NAME" --labels spine-editor,chrome --work _work \
   --unattended --replace --disableupdate
 ./svc.sh install "$RUNNER_USER"
 ./svc.sh start
