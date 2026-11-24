@@ -1,0 +1,27 @@
+name: Worker bootstrap checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate shell syntax
+        run: |
+          set -euo pipefail
+          bash -n setup/bootstrap-ubuntu.sh
+          bash -n setup/install-spine.sh
+          bash -n setup/configure-runner.sh
+          bash -n setup/verify-worker.sh
+          bash -n tests/test_setup_contract.sh
+      - name: Run setup contract tests
+        run: bash tests/test_setup_contract.sh
