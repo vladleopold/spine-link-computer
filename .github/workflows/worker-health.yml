@@ -1,0 +1,39 @@
+name: Spine worker health check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: licensed-spine-worker
+  cancel-in-progress: false
+
+jobs:
+  health:
+    runs-on: [self-hosted, linux, X64, spine-editor, chrome]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Chrome and Xvfb
+        run: |
+          set -euo pipefail
+          google-chrome --version
+          command -v xvfb-run
+      - name: Verify installed licensed Spine Editor
+        run: |
+          set -euo pipefail
+          test -s /opt/spine/Spine.sh.path
+          SPINE_CLI="$(cat /opt/spine/Spine.sh.path)"
+          test -x "$SPINE_CLI"
+          xvfb-run -a "$SPINE_CLI" --version
+      - name: Report worker identity and versions
+        run: |
+          {
+            echo '## Dedicated Spine worker'
+            echo "- Host: $(hostname)"
+            echo "- OS: $(. /etc/os-release && echo "$PRETTY_NAME")"
+            echo "- Chrome: $(google-chrome --version)"
+            echo "- Spine CLI: $(cat /opt/spine/Spine.sh.path)"
+          } >> "$GITHUB_STEP_SUMMARY"
