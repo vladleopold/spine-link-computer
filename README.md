@@ -19,7 +19,7 @@ Install the licensed Spine launcher/editor. The license page in the private Spin
     read -rsp 'Spine activation code: ' SPINE_ACTIVATION_CODE; echo
     read -rsp 'Direct Linux launcher download URL: ' SPINE_LINUX_URL; echo
     export SPINE_ACTIVATION_CODE SPINE_LINUX_URL
-    bash setup/install-spine.sh
+    sudo -E bash setup/install-spine.sh
     unset SPINE_ACTIVATION_CODE SPINE_LINUX_URL
 
 The installer activates using Spine.sh --install and installs pinned editor versions 3.7.94 and 4.3.26. Confirm the license terms authorize the intended CI use and seat; Esoteric Software distinguishes named-user licenses from dedicated CI/Enterprise seats.
@@ -28,7 +28,7 @@ Register the runner with a short-lived registration token generated while authen
 
     gh auth login
     export GITHUB_RUNNER_TOKEN="$(gh api repos/vladleopold/spine-link-computer/actions/runners/registration-token --method POST --jq .token)"
-    sudo -u spine-runner env GITHUB_RUNNER_TOKEN="$GITHUB_RUNNER_TOKEN" bash setup/configure-runner.sh
+    sudo -E bash setup/configure-runner.sh
     unset GITHUB_RUNNER_TOKEN
 
 The token is short-lived and is not written into this repository. The runner is registered with labels self-hosted,linux,X64,spine-editor,chrome and installed as a system service.
@@ -38,7 +38,7 @@ The token is short-lived and is not written into this repository. The runner is 
     bash tests/test_setup_contract.sh
     bash setup/verify-worker.sh
 
-Then open Settings → Actions → Runners and verify the worker is Idle/Online. Trigger the manual workflow Spine worker health check. It verifies Chrome, Xvfb, Spine CLI and both installed editor versions.
+Then open Settings → Actions → Runners and verify the worker is Idle/Online. Trigger the manual workflow Spine worker health check. It verifies Chrome, Xvfb and the Spine CLI.
 
 ## Secrets and safety
 
