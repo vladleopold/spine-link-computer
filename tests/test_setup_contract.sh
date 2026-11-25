@@ -11,6 +11,9 @@ grep -q '3Spine-core' "$ROOT/setup/configure-runner.sh"
 grep -q 'spine-editor' "$ROOT/setup/configure-runner.sh"
 grep -q 'actions/runners/registration-token' "$ROOT/README.md"
 grep -q 'root privileges' "$ROOT/setup/configure-runner.sh"
+grep -q 'workflow_dispatch' "$ROOT/.github/workflows/spine-worker-health.yml"
+grep -q 'runs-on: \[self-hosted, linux, X64\]' "$ROOT/.github/workflows/spine-worker-health.yml"
+grep -q 'id -un' "$ROOT/setup/verify-worker.sh"
 if grep -R -nE 'github_pat_[A-Za-z0-9_]+' "$ROOT" --exclude-dir=.git --exclude=test_setup_contract.sh; then
   echo 'A credential-like value was committed.' >&2
   exit 1
