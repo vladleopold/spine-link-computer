@@ -1,0 +1,19 @@
+name: Spine worker health check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: [self-hosted, linux, X64]
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify Chrome, Xvfb and licensed Spine Editor
+        shell: bash
+        run: bash setup/verify-worker.sh
