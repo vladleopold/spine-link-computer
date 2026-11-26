@@ -1,49 +1,22 @@
-# Spine Link Computer — Ubuntu CI worker
+# Spine Link Computer — retired self-hosted runner
 
-Dedicated Ubuntu 24.04 x86_64 machine for Spine Link automation. The worker is a self-hosted GitHub Actions runner with Google Chrome, Xvfb/software OpenGL and the licensed Spine launcher/editor.
+**Retired:** this repository previously documented a persistent Ubuntu host registered as a self-hosted GitHub Actions runner. That execution model is no longer approved for this project.
 
-## Why jobs were queued
+Do not run the bootstrap, Spine installation, or runner-registration scripts in this repository. Do not register a self-hosted runner or install a persistent runner service for Spine Link tasks.
 
-A job targeting self-hosted, linux, X64 stays queued until a matching runner is online. GitHub-hosted Actions cannot turn this repository into a persistent server. This repository supplies the reproducible server bootstrap; it must be run on an Ubuntu VM/host that remains powered on and connected to GitHub.
+## Approved execution model
 
-## Bootstrap (Ubuntu 24.04 x86_64)
+All automated project jobs must execute on GitHub-hosted Ubuntu runners from approved public repositories, including:
 
-Use a dedicated machine and a dedicated Linux account. Do not run the runner as root.
+- `SpineAnimator/sa-public-runner`
+- `SpineAnimator/sa-psd-tool-runner`
+- `SpineAnimator/2Spine-visual-audit`
+- `SpineAnimator/Spine-Link-project-export`
 
-    git clone https://github.com/vladleopold/spine-link-computer.git
-    cd spine-link-computer
-    sudo bash setup/bootstrap-ubuntu.sh
+A public reusable workflow is not sufficient by itself when called from a private repository: execution and billing remain in the caller's context. Use public-repository scheduled or explicitly dispatched orchestration where appropriate, and keep private source access read-only and credentials unpersisted.
 
-Install the licensed Spine launcher/editor. The license page in the private Spine.txt Library file contains the activation code and Linux download link. Do not commit either value or paste them into chat/logs.
+## Repository status
 
-    read -rsp 'Spine activation code: ' SPINE_ACTIVATION_CODE; echo
-    read -rsp 'Direct Linux launcher download URL: ' SPINE_LINUX_URL; echo
-    export SPINE_ACTIVATION_CODE SPINE_LINUX_URL
-    sudo -E bash setup/install-spine.sh
-    unset SPINE_ACTIVATION_CODE SPINE_LINUX_URL
+The remaining setup files are retained as historical reference only. The only active workflow here is the lightweight repository contract check, which runs on GitHub-hosted Ubuntu and verifies that no self-hosted Actions target is enabled.
 
-The installer activates using Spine.sh --install and installs pinned editor versions 3.7.94 and 4.3.26. Confirm the license terms authorize the intended CI use and seat; Esoteric Software distinguishes named-user licenses from dedicated CI/Enterprise seats.
-
-Register the runner with a short-lived registration token generated while authenticated as a repository administrator:
-
-    gh auth login
-    export GITHUB_RUNNER_TOKEN="$(gh api repos/vladleopold/3Spine-core/actions/runners/registration-token --method POST --jq .token)"
-    sudo -E bash setup/configure-runner.sh
-    unset GITHUB_RUNNER_TOKEN
-
-The runner is registered to vladleopold/3Spine-core (the repository whose licensed-editor jobs were queued). The token is short-lived and is not written into this repository. The runner is registered with labels self-hosted,linux,X64,spine-editor,chrome and installed as a system service.
-
-## Verification
-
-    bash tests/test_setup_contract.sh
-    bash setup/verify-worker.sh
-
-Then open Settings → Actions → Runners and verify the worker is Idle/Online. Trigger the manual workflow Spine worker health check. It verifies Chrome, Xvfb and the Spine CLI.
-
-## Secrets and safety
-
-- Never commit .env, activation codes, license-page URLs, runner tokens, or downloaded licensed binaries.
-- Keep the host dedicated to the authorized license holder; restrict SSH and runner account access.
-- The worker is single-job by default to prevent concurrent use of one licensed editor installation.
-- GitHub Actions logs must never print secret values.
-- A runner is not online until the Ubuntu host is provisioned, the service is started, and GitHub reports it online.
+Licensed Spine Editor assets, activation codes, download URLs, runner registration tokens, private PSDs, and customer deliverables must never be committed to this public repository.
